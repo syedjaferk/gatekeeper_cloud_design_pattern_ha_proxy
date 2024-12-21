@@ -1,0 +1,28 @@
+
+services:
+  flask_app:
+    build:
+      context: ./flask_app
+    ports:
+      - "5000:5000"
+    networks:
+      - app_network
+
+  haproxy:
+    image: haproxy:2.4.28
+    volumes:
+      - ./ha_proxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - "8090:8090"
+    depends_on:
+      - flask_app
+    networks:
+      - app_network
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  app_network:
